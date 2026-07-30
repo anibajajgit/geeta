@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ask the Gita</title>
+<style>
+  :root {
+    --bg: #1a1410;
+    --surface: #2a2118;
+    --surface2: #3a3028;
+    --accent: #d4a054;
+    --accent-dim: #a07830;
+    --text: #e8dcc8;
+    --text-dim: #a89878;
+    --user-bg: #3a3028;
+    --ai-bg: #1e1a14;
+    --border: #4a3a28;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    text-align: center;
+    padding: 1.2rem 1rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  header h1 {
+    font-size: 1.6rem;
+    color: var(--accent);
+    font-weight: normal;
+    letter-spacing: 0.05em;
+  }
+  header p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .setup-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .setup-bar label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .setup-bar input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.4rem 0.6rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: monospace;
+    font-size: 0.8rem;
+  }
+  .setup-bar input:focus { outline: none; border-color: var(--accent); }
+  .setup-bar a {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .setup-bar a:hover { text-decoration: underline; }
+  .setup-bar .status {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .status.connected { background: #1a3a1a; color: #5a5; }
+  .status.disconnected { background: #3a1a1a; color: #a55; }
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .welcome {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-dim);
+  }
+  .welcome .sanskrit {
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .welcome .translation {
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+  .welcome .hint {
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .msg {
+    max-width: 85%;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--user-bg);
+    border: 1px solid var(--border);
+  }
+  .msg.ai {
+    align-self: flex-start;
+    background: var(--ai-bg);
+    border: 1px solid var(--border);
+    max-width: 92%;
+  }
+  .msg.ai strong, .msg.ai b { color: var(--accent); }
+  .msg.ai em, .msg.ai i { color: var(--text-dim); }
+  .msg.ai code {
+    background: var(--surface2);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+  .msg.ai h3, .msg.ai h4 {
+    color: var(--accent);
+    margin: 0.6rem 0 0.3rem;
+    font-size: 0.95rem;
+  }
+  .msg.ai p { margin-bottom: 0.5rem; }
+  .msg.ai ul, .msg.ai ol { margin: 0.3rem 0 0.5rem 1.2rem; }
+  .msg.ai li { margin-bottom: 0.2rem; }
+  .msg.ai details { margin-top: 0.5rem; }
+  .msg.ai summary {
+    cursor: pointer;
+    color: var(--accent-dim);
+    font-size: 0.85rem;
+  }
+  .msg.ai hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.8rem 0;
+  }
+  .msg.ai blockquote {
+    border-left: 2px solid var(--accent-dim);
+    padding-left: 0.8rem;
+    margin: 0.4rem 0;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .msg.error {
+    align-self: center;
+    background: #3a1a1a;
+    border: 1px solid #5a2a2a;
+    color: #d88;
+    font-size: 0.8rem;
+  }
+  .typing {
+    align-self: flex-start;
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+  .typing::after {
+    content: '';
+    animation: dots 1.5s infinite;
+  }
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+  }
+  #input-area {
+    padding: 0.8rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    gap: 0.5rem;
+  }
+  #input-area textarea {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: Georgia, serif;
+    font-size: 0.9rem;
+    resize: none;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.4;
+  }
+  #input-area textarea:focus { outline: none; border-color: var(--accent); }
+  #input-area textarea::placeholder { color: var(--text-dim); }
+  #send-btn {
+    padding: 0 1rem;
+    background: var(--accent-dim);
+    border: none;
+    border-radius: 6px;
+    color: var(--bg);
+    font-family: Georgia, serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+  #send-btn:hover { background: var(--accent); }
+  #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  footer {
+    text-align: center;
+    padding: 0.4rem;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3rem; }
+    .msg { max-width: 95%; }
+    .msg.ai { max-width: 98%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ask the Gita</h1>
+  <p>Life guidance grounded in the Bhagavad Gita, with shloka evidence</p>
+</header>
+
+<div class="setup-bar">
+  <label for="api-key">Gemini API Key:</label>
+  <input type="password" id="api-key" placeholder="Paste your key here (stored locally only)" />
+  <a href="https://aistudio.google.com/apikey" target="_blank">Get free key</a>
+  <span id="status" class="status disconnected">no key</span>
+</div>
+
+<div id="chat">
+  <div class="welcome">
+    <div class="sanskrit">धर्मक्षेत्रे कुरुक्षेत्रे</div>
+    <div class="translation">"In the field of dharma, in the field of action..."</div>
+    <div class="hint">
+      Ask any life question. You'll receive practical guidance<br>
+      grounded in Bhagavad Gita wisdom, with supporting shlokas.<br><br>
+      Examples: "How do I deal with anxiety about the future?"<br>
+      "I feel stuck in my career, what should I do?"<br>
+      "How to handle a toxic relationship?"
+    </div>
+  </div>
+</div>
+
+<div id="input-area">
+  <textarea id="user-input" placeholder="Ask your question..." rows="1"></textarea>
+  <button id="send-btn" disabled>Ask</button>
+</div>
+
+<footer>Answers are AI-generated interpretations of the Bhagavad Gita. Not a substitute for a qualified teacher.</footer>
+
+<script>
+const SYSTEM_PROMPT = `You are "Ask the Gita" — a wise, compassionate guide who answers life questions based strictly on the Bhagavad Gita's teachings. You have deeply studied all 18 chapters, key shlokas in Sanskrit with translations, and commentary from Shankaracharya, Ramanujacharya, Madhvacharya, Om Swami, Sadhguru, and Swami Sarvapriyananda.
+
+RESPONSE FORMAT (strict):
+1. **Answer** — 1-3 sentences. Practical, direct, with a tangible next step. No preaching.
+2. --- (horizontal rule)
+3. **Why (summary)** — 2-3 sentences connecting the answer to the Gita's philosophy.
+4. Then a "Deeper" section with shloka evidence — include Sanskrit transliteration, translation, verse number, and how it supports the answer.
+
+RULES:
+- Speak less. Be concise. One line of advice is enough.
+- Always ground answers in specific Gita verses (cite chapter.verse).
+- Include Sanskrit transliteration of key verses.
+- Don't moralize or preach. Be honest, even when the truth is uncomfortable.
+- The Gita never forces — Krishna ends with "yathecchasi tatha kuru" (do as you wish). Respect the questioner's autonomy.
+- When multiple Gita perspectives exist (Advaita/Vishishtadvaita/Dvaita), acknowledge the diversity briefly.
+- Be warm but direct — like a wise friend, not a guru on a pedestal.
+
+CORE CONCEPTS (with key verses):
+
+ATMAN (Eternal Self): 2.20 (na jayate mriyate va kadachin), 2.22 (clothes analogy), 13.2 (kshetra-kshetrajna)
+
+KARMA YOGA (Selfless Action): 2.47 (karmany evadhikaraste), 2.48 (samatvam yoga uchyate), 3.9 (yajna), 3.19 (act without attachment), 3.35/18.47 (svadharma)
+
+BHAKTI (Devotion): 9.22 (yoga-kshemam vahamyaham), 9.26 (patram pushpam), 11.54 (only bhakti reveals), 12.13-20 (qualities of dear devotee), 6.47 (bhakti yogi supreme)
+
+JNANA (Knowledge): 4.38 (nothing as purifying as knowledge), 4.34 (approach guru), 13.8-12 (20 qualities), 7.19 (vasudevah sarvam)
+
+GUNAS: Sattva/Rajas/Tamas — 14.5-8 (how they bind), 14.19-26 (transcendence through bhakti), 17.8-22 (food/sacrifice/austerity/charity classified), 18.20-22 (three types of knowledge), 18.36-39 (three types of happiness)
+
+DHARMA: 3.35 (svadharma), 4.7-8 (yada yada hi dharmasya — avatar doctrine), 16.24 (shastra as authority)
+
+SURRENDER: 18.66 (sarva dharman parityajya — THE climactic verse), 7.14 (surrender crosses Maya), 18.62-63 (take refuge, then do as you wish)
+
+STHITAPRAJNA (Steady Wisdom): 2.55-56 (definition), 2.62-63 (chain of destruction: contemplation>attachment>desire>anger>delusion>memory loss>intellect destruction>ruin), 2.70 (ocean analogy)
+
+MAYA: 7.14 (divine energy, hard to cross), rope-snake analogy (Shankara)
+
+MIND CONTROL: 6.5 (uplift yourself by yourself), 6.34-35 (mind like wind, conquered by abhyasa+vairagya), 6.6 (mind as friend or enemy)
+
+MOKSHA: 14.20 (transcend gunas), jivanmukti (liberation while living), videhamukti (after death)
+
+THREE TYPES OF HAPPINESS: Sattvic 18.37 (poison first, nectar later), Rajasic 18.38 (nectar first, poison later), Tamasic 18.39 (delusion throughout)
+
+CHAPTER STRUCTURE: Ch 1-6 (Karma Yoga — Who am I?), Ch 7-12 (Bhakti Yoga — Who is God?), Ch 13-18 (Jnana Yoga — How are we one?)
+
+The Gita begins with Arjuna's delusion (Ch 1) and ends with "nashto mohah" — delusion destroyed (18.73). The full arc: confusion → knowledge → action → devotion → surrender → clarity.`;
+
+let history = [];
+let apiKey = localStorage.getItem('gemini_api_key') || '';
+
+const chatEl = document.getElementById('chat');
+const inputEl = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const keyInput = document.getElementById('api-key');
+const statusEl = document.getElementById('status');
+
+if (apiKey) {
+  keyInput.value = apiKey;
+  setConnected(true);
+}
+
+keyInput.addEventListener('input', () => {
+  apiKey = keyInput.value.trim();
+  if (apiKey) {
+    localStorage.setItem('gemini_api_key', apiKey);
+    setConnected(true);
+  } else {
+    localStorage.removeItem('gemini_api_key');
+    setConnected(false);
+  }
+});
+
+function setConnected(yes) {
+  statusEl.textContent = yes ? 'ready' : 'no key';
+  statusEl.className = 'status ' + (yes ? 'connected' : 'disconnected');
+  sendBtn.disabled = !yes;
+}
+
+inputEl.addEventListener('input', () => {
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+});
+
+inputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+sendBtn.addEventListener('click', sendMessage);
+
+function addMessage(role, text) {
+  const welcome = chatEl.querySelector('.welcome');
+  if (welcome) welcome.remove();
+
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if (role === 'ai') {
+    div.innerHTML = renderMarkdown(text);
+  } else {
+    div.textContent = text;
+  }
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return div;
+}
+
+function renderMarkdown(text) {
+  let html = text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/<details>\s*/gi, '<details>')
+    .replace(/<summary>(.+?)<\/summary>/gi, '<summary>$1</summary>')
+    .replace(/<\/details>/gi, '</details>');
+
+  html = html.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+  html = '<p>' + html + '</p>';
+  html = html.replace(/<p><(h[34]|hr|ul|blockquote|details)/g, '<$1')
+             .replace(/<\/(h[34]|hr|ul|blockquote|details)><\/p>/g, '</$1>');
+  return html;
+}
+
+async function sendMessage() {
+  const text = inputEl.value.trim();
+  if (!text || !apiKey) return;
+
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+  sendBtn.disabled = true;
+
+  addMessage('user', text);
+  history.push({ role: 'user', parts: [{ text }] });
+
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.textContent = 'Contemplating';
+  chatEl.appendChild(typing);
+  chatEl.scrollTop = chatEl.scrollHeight;
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: history,
+          generationConfig: {
+            temperature: 0.75,
+            maxOutputTokens: 2048,
+            topP: 0.95
+          }
+        })
+      }
+    );
+
+    typing.remove();
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
+
+    history.push({ role: 'model', parts: [{ text: reply }] });
+    addMessage('ai', reply);
+  } catch (e) {
+    typing.remove();
+    addMessage('error', e.message);
+    history.pop();
+  }
+
+  sendBtn.disabled = false;
+  inputEl.focus();
+}
+</script>
+</body>
+</html>
