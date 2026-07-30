@@ -56,6 +56,15 @@
     font-style: italic;
     font-weight: 300;
   }
+  header .change-key {
+    font-size: 0.65rem;
+    color: #999;
+    cursor: pointer;
+    margin-top: 0.2rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  header .change-key:hover { color: #666; }
 
   /* Onboarding overlay */
   #onboarding {
@@ -393,6 +402,7 @@
 <header class="glass">
   <h1>Ask the Gita</h1>
   <p>Life guidance grounded in the Bhagavad Gita, with shloka evidence</p>
+  <div class="change-key" onclick="showOnboarding()">Change API key</div>
 </header>
 
 <div id="chat">
@@ -487,6 +497,12 @@ onboardKey.addEventListener('keydown', (e) => {
 });
 
 onboardBtn.addEventListener('click', completeOnboarding);
+
+function showOnboarding() {
+  onboardKey.value = '';
+  onboardBtn.disabled = true;
+  onboarding.classList.remove('hidden');
+}
 
 function completeOnboarding() {
   apiKey = onboardKey.value.trim();
