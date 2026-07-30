@@ -6,21 +6,8 @@
 <title>Ask the Gita</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+Devanagari:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: rgba(10, 8, 6, 0.85);
-    --surface: rgba(20, 16, 12, 0.92);
-    --surface2: rgba(30, 24, 18, 0.88);
-    --accent: #d4a054;
-    --accent-dim: #a07830;
-    --accent-glow: rgba(212, 160, 84, 0.15);
-    --text: #e8dcc8;
-    --text-dim: #a89878;
-    --user-bg: rgba(50, 40, 30, 0.85);
-    --ai-bg: rgba(15, 12, 8, 0.9);
-    --border: rgba(74, 58, 40, 0.6);
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   #video-bg {
@@ -33,83 +20,148 @@
 
   body {
     font-family: 'Cormorant Garamond', Georgia, serif;
-    color: var(--text);
+    color: #1a1a1a;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative;
   }
 
-  .sanskrit-text {
-    font-family: 'Noto Serif Devanagari', serif;
+  /* Apple frosted glass */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+  }
+  .glass-heavy {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(50px) saturate(200%);
+    -webkit-backdrop-filter: blur(50px) saturate(200%);
   }
 
   header {
     text-align: center;
-    padding: 1.4rem 1rem 0.8rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    padding: 1.2rem 1rem 0.7rem;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
   }
   header h1 {
-    font-size: 2rem;
-    color: var(--accent);
+    font-size: 1.8rem;
     font-weight: 300;
-    letter-spacing: 0.08em;
-    text-shadow: 0 0 30px var(--accent-glow);
+    letter-spacing: 0.06em;
+    color: #1a1a1a;
   }
   header p {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.2rem;
     font-style: italic;
     font-weight: 300;
   }
 
-  .setup-bar {
+  /* Onboarding overlay */
+  #onboarding {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
-    background: var(--surface2);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
-  .setup-bar label {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    white-space: nowrap;
+  #onboarding.hidden { display: none; }
+  .onboard-card {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(50px) saturate(200%);
+    -webkit-backdrop-filter: blur(50px) saturate(200%);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    text-align: center;
   }
-  .setup-bar input {
-    flex: 1;
-    min-width: 200px;
-    padding: 0.4rem 0.6rem;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text);
-    font-family: monospace;
-    font-size: 0.8rem;
+  .onboard-card h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 0.3rem;
   }
-  .setup-bar input:focus { outline: none; border-color: var(--accent); }
-  .setup-bar a {
+  .onboard-card .subtitle {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+  .onboard-card .steps {
+    text-align: left;
+    margin-bottom: 1.5rem;
+  }
+  .onboard-card .step {
+    display: flex;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+  .onboard-card .step-num {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 0.7rem;
-    color: var(--accent);
-    text-decoration: none;
-    white-space: nowrap;
+    font-weight: 600;
+    margin-top: 2px;
   }
-  .setup-bar a:hover { text-decoration: underline; }
-  .setup-bar .status {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.5rem;
+  .onboard-card .step-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #333;
+  }
+  .onboard-card .step-text a {
+    color: #1a1a1a;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .onboard-card input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #ddd;
     border-radius: 10px;
-    white-space: nowrap;
+    font-family: monospace;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.8);
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
   }
-  .status.connected { background: rgba(26,58,26,0.8); color: #5a5; }
-  .status.disconnected { background: rgba(58,26,26,0.8); color: #a55; }
+  .onboard-card input:focus { outline: none; border-color: #1a1a1a; }
+  .onboard-card input::placeholder { color: #aaa; }
+  .onboard-card button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: opacity 0.2s;
+  }
+  .onboard-card button:hover { opacity: 0.85; }
+  .onboard-card button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .onboard-card .note {
+    font-size: 0.7rem;
+    color: #999;
+    margin-top: 0.8rem;
+    line-height: 1.4;
+  }
 
   #chat {
     flex: 1;
@@ -118,69 +170,81 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
   .welcome {
     text-align: center;
-    padding: 4rem 1rem;
-    color: var(--text-dim);
+    padding: 3rem 1rem;
   }
   .welcome .sanskrit {
     font-family: 'Noto Serif Devanagari', serif;
-    font-size: 1.5rem;
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 20px var(--accent-glow);
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-bottom: 0.4rem;
   }
   .welcome .translation {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-style: italic;
     font-weight: 300;
-    margin-bottom: 2rem;
+    color: #555;
+    margin-bottom: 2.5rem;
   }
-  .welcome .hint {
-    font-size: 0.9rem;
-    line-height: 1.8;
-    font-weight: 300;
+  .welcome .examples {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .welcome .example {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #444;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: background 0.2s;
+  }
+  .welcome .example:hover {
+    background: rgba(255,255,255,0.9);
   }
 
   .msg {
     max-width: 85%;
     padding: 0.9rem 1.1rem;
-    border-radius: 8px;
+    border-radius: 12px;
     line-height: 1.7;
     font-size: 1rem;
-    font-weight: 300;
+    font-weight: 400;
   }
   .msg.user {
     align-self: flex-end;
-    background: var(--user-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 12px 12px 4px 12px;
   }
   .msg.ai {
     align-self: flex-start;
-    background: var(--ai-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(0,0,0,0.06);
     max-width: 92%;
+    color: #1a1a1a;
+    border-radius: 12px 12px 12px 4px;
   }
-  .msg.ai strong, .msg.ai b { color: var(--accent); font-weight: 600; }
-  .msg.ai em, .msg.ai i { color: var(--text-dim); }
+  .msg.ai strong, .msg.ai b { font-weight: 600; }
+  .msg.ai em, .msg.ai i { color: #555; }
   .msg.ai code {
-    background: rgba(255,255,255,0.06);
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
+    background: rgba(0,0,0,0.05);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
     font-size: 0.85em;
     font-family: 'Noto Serif Devanagari', monospace;
   }
   .msg.ai h3, .msg.ai h4 {
-    color: var(--accent);
     margin: 0.6rem 0 0.3rem;
     font-size: 1.05rem;
     font-weight: 600;
@@ -191,33 +255,34 @@
   .msg.ai details { margin-top: 0.5rem; }
   .msg.ai summary {
     cursor: pointer;
-    color: var(--accent-dim);
-    font-size: 0.9rem;
+    color: #666;
+    font-size: 0.85rem;
+    font-style: italic;
   }
   .msg.ai hr {
     border: none;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid rgba(0,0,0,0.1);
     margin: 0.8rem 0;
   }
   .msg.ai blockquote {
-    border-left: 2px solid var(--accent-dim);
+    border-left: 2px solid #999;
     padding-left: 0.8rem;
     margin: 0.4rem 0;
-    color: var(--text-dim);
+    color: #555;
     font-style: italic;
     font-family: 'Noto Serif Devanagari', serif;
   }
   .msg.error {
     align-self: center;
-    background: rgba(58,26,26,0.85);
-    border: 1px solid #5a2a2a;
-    color: #d88;
+    background: rgba(220,50,50,0.1);
+    border: 1px solid rgba(220,50,50,0.2);
+    color: #a33;
     font-size: 0.8rem;
   }
 
   .typing {
     align-self: flex-start;
-    color: var(--text-dim);
+    color: #888;
     font-style: italic;
     font-size: 0.9rem;
     padding: 0.5rem;
@@ -234,67 +299,63 @@
 
   #input-area {
     padding: 0.8rem 1rem;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0,0,0,0.08);
     display: flex;
     gap: 0.5rem;
   }
   #input-area textarea {
     flex: 1;
     padding: 0.7rem 0.9rem;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
+    background: rgba(255,255,255,0.6);
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 10px;
+    color: #1a1a1a;
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: 1rem;
-    font-weight: 300;
+    font-weight: 400;
     resize: none;
     min-height: 44px;
     max-height: 120px;
     line-height: 1.4;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
-  #input-area textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
-  #input-area textarea::placeholder { color: var(--text-dim); }
+  #input-area textarea:focus { outline: none; border-color: #1a1a1a; }
+  #input-area textarea::placeholder { color: #999; }
   #send-btn {
     padding: 0 1.2rem;
-    background: var(--accent-dim);
+    background: #1a1a1a;
     border: none;
-    border-radius: 6px;
-    color: #1a1410;
+    border-radius: 10px;
+    color: #fff;
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
-    letter-spacing: 0.05em;
-    transition: background 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.03em;
+    transition: opacity 0.2s;
   }
-  #send-btn:hover { background: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
-  #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #send-btn:hover { opacity: 0.85; }
+  #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
   footer {
     text-align: center;
     padding: 0.4rem;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    background: var(--surface);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
-    font-weight: 300;
+    font-size: 0.6rem;
+    color: #999;
+    border-top: 1px solid rgba(0,0,0,0.06);
   }
 
-  #chat::-webkit-scrollbar { width: 6px; }
+  #chat::-webkit-scrollbar { width: 4px; }
   #chat::-webkit-scrollbar-track { background: transparent; }
-  #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  #chat::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
 
   @media (max-width: 600px) {
-    header h1 { font-size: 1.5rem; }
+    header h1 { font-size: 1.4rem; }
     .msg { max-width: 95%; }
     .msg.ai { max-width: 98%; }
     .welcome { padding: 2rem 0.5rem; }
+    .onboard-card { padding: 1.8rem 1.2rem; }
   }
 </style>
 </head>
@@ -304,38 +365,54 @@
   <source src="bg.mp4" type="video/mp4">
 </video>
 
-<header>
+<!-- Onboarding modal -->
+<div id="onboarding" class="hidden">
+  <div class="onboard-card">
+    <h2>Welcome to Ask the Gita</h2>
+    <div class="subtitle">One free step to start</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Go to <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> and sign in with your Google account</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Click <strong>"Create API Key"</strong> — it's instant and free</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Copy the key and paste it below</div>
+      </div>
+    </div>
+    <input type="password" id="onboard-key" placeholder="Paste your API key here" />
+    <button id="onboard-btn" disabled>Begin</button>
+    <div class="note">Your key stays in your browser only. It is never sent to our servers — calls go directly from your browser to Google.</div>
+  </div>
+</div>
+
+<header class="glass">
   <h1>Ask the Gita</h1>
   <p>Life guidance grounded in the Bhagavad Gita, with shloka evidence</p>
 </header>
-
-<div class="setup-bar">
-  <label for="api-key">Gemini API Key:</label>
-  <input type="password" id="api-key" placeholder="Paste your key here (stored locally only)" />
-  <a href="https://aistudio.google.com/apikey" target="_blank">Get free key</a>
-  <span id="status" class="status disconnected">no key</span>
-</div>
 
 <div id="chat">
   <div class="welcome">
     <div class="sanskrit">धर्मक्षेत्रे कुरुक्षेत्रे</div>
     <div class="translation">"In the field of dharma, in the field of action..."</div>
-    <div class="hint">
-      Ask any life question. You'll receive practical guidance<br>
-      grounded in Bhagavad Gita wisdom, with supporting shlokas.<br><br>
-      "How do I deal with anxiety about the future?"<br>
-      "I feel stuck in my career, what should I do?"<br>
-      "How to handle a toxic relationship?"
+    <div class="examples">
+      <div class="example" onclick="askExample(this)">How do I deal with anxiety about the future?</div>
+      <div class="example" onclick="askExample(this)">I feel stuck — what should I do?</div>
+      <div class="example" onclick="askExample(this)">How to let go of someone?</div>
     </div>
   </div>
 </div>
 
-<div id="input-area">
+<div id="input-area" class="glass-heavy">
   <textarea id="user-input" placeholder="Ask your question..." rows="1"></textarea>
   <button id="send-btn" disabled>Ask</button>
 </div>
 
-<footer>Answers are AI-generated interpretations of the Bhagavad Gita. Not a substitute for a qualified teacher.</footer>
+<footer class="glass">Answers are AI-generated interpretations of the Bhagavad Gita. Not a substitute for a qualified teacher.</footer>
 
 <script>
 const SYSTEM_PROMPT = `You are "Ask the Gita" — a wise, compassionate guide who answers life questions based strictly on the Bhagavad Gita's teachings. You have deeply studied all 18 chapters, key shlokas in Sanskrit with translations, and commentary from Shankaracharya, Ramanujacharya, Madhvacharya, Om Swami, Sadhguru, and Swami Sarvapriyananda.
@@ -391,29 +468,33 @@ let apiKey = localStorage.getItem('gemini_api_key') || '';
 const chatEl = document.getElementById('chat');
 const inputEl = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
-const keyInput = document.getElementById('api-key');
-const statusEl = document.getElementById('status');
+const onboarding = document.getElementById('onboarding');
+const onboardKey = document.getElementById('onboard-key');
+const onboardBtn = document.getElementById('onboard-btn');
 
 if (apiKey) {
-  keyInput.value = apiKey;
-  setConnected(true);
+  sendBtn.disabled = false;
+} else {
+  onboarding.classList.remove('hidden');
 }
 
-keyInput.addEventListener('input', () => {
-  apiKey = keyInput.value.trim();
-  if (apiKey) {
-    localStorage.setItem('gemini_api_key', apiKey);
-    setConnected(true);
-  } else {
-    localStorage.removeItem('gemini_api_key');
-    setConnected(false);
-  }
+onboardKey.addEventListener('input', () => {
+  onboardBtn.disabled = !onboardKey.value.trim();
 });
 
-function setConnected(yes) {
-  statusEl.textContent = yes ? 'ready' : 'no key';
-  statusEl.className = 'status ' + (yes ? 'connected' : 'disconnected');
-  sendBtn.disabled = !yes;
+onboardKey.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && onboardKey.value.trim()) completeOnboarding();
+});
+
+onboardBtn.addEventListener('click', completeOnboarding);
+
+function completeOnboarding() {
+  apiKey = onboardKey.value.trim();
+  if (!apiKey) return;
+  localStorage.setItem('gemini_api_key', apiKey);
+  onboarding.classList.add('hidden');
+  sendBtn.disabled = false;
+  inputEl.focus();
 }
 
 inputEl.addEventListener('input', () => {
@@ -429,6 +510,11 @@ inputEl.addEventListener('keydown', (e) => {
 });
 
 sendBtn.addEventListener('click', sendMessage);
+
+function askExample(el) {
+  inputEl.value = el.textContent;
+  sendMessage();
+}
 
 function addMessage(role, text) {
   const welcome = chatEl.querySelector('.welcome');
